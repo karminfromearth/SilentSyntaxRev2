@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Central</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: monospace, sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #main-content {
+      display: none;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+
+    .fade-in {
+      display: block !important;
+      opacity: 1 !important;
+    }
+
+    .loading-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .loading-bar {
+      width: 20px;
+      height: 100px;
+      background-color: #1f1f1f;
+      animation: raiseLower 1.5s ease-in-out infinite;
+    }
+
+    .loading-bar:nth-child(2) { animation-delay: 0.2s; }
+    .loading-bar:nth-child(3) { animation-delay: 0.4s; }
+    .loading-bar:nth-child(4) { animation-delay: 0.6s; }
+    .loading-bar:nth-child(5) { animation-delay: 0.8s; }
+
+    @keyframes raiseLower {
+      0%, 100% { transform: translateY(25px); }
+      50% { transform: translateY(-25px); }
+    }
+
+    .button {
+      background-color: #333;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #preloader {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+      background-color: #000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #ffffff;
+      font-family: monospace;
+      font-size: 20px;
+      text-align: center;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 1s ease-in-out;
+    }
+
+    .fade-out {
+      opacity: 0 !important;
+    }
+
+    #typewriter-text, #author-text {
+      display: block;
+      text-align: center;
+      max-width: 80%;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+  <!-- Preloader -->
+  <div id="preloader">
+    <div id="typewriter-text"></div>
+    <div id="author-text" style="margin-top: 10px;"></div>
+  </div>
+
+  <!-- Main Content -->
+  <div id="main-content">
+    <div style="position: absolute; top: 20px; text-align: center; width: 100%;">
+      <h1>- S i l e n t - <br>- S y n t a x -</h1>
+    </div>
+
+    <div class="loading-container">
+      <div class="loading-bar"></div>
+      <div class="loading-bar"></div>
+      <div class="loading-bar"></div>
+      <div class="loading-bar"></div>
+      <div class="loading-bar"></div>
+    </div>
+
+    <div style="position: absolute; bottom: 25px; text-align: center; width: 100%;">
+      <a href="sideprojects.html"><button class="button">Side Projects</button></a>
+      <br><br>
+      <button onclick="toggleMusic()" class="button" id="musicToggleBtn">Pause Music</button>
+      <audio id="menuMusic" loop>
+        <source src="Aphex Twin - Cirklon3 (Kolkhoznaya mix).mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+      </audio>
+      <p>Menu Theme is : CIRKLON3 by Aphex Twin</p>
+    </div>
+  </div>
+
+  <script>
+    const text = "Embrace change and adapt quickly to stay ahead in the tech world";
+    const author = "- Brendan Eich, Creator of Javascript";
+    const typewriterText = document.getElementById("typewriter-text");
+    const authorText = document.getElementById("author-text");
+    const preloader = document.getElementById("preloader");
+    const mainContent = document.getElementById("main-content");
+    const music = document.getElementById("menuMusic");
+    const musicToggleBtn = document.getElementById("musicToggleBtn");
+
+    let currentText = "";
+    let currentAuthor = "";
+    let index = 0;
+    let authorIndex = 0;
+
+    function randomChar() {
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+      return chars[Math.floor(Math.random() * chars.length)];
+    }
+
+    function typeEffect() {
+      if (index === 0) {
+        music.play().catch(() => {
+          console.log("Autoplay blocked by browser.");
+        });
+      }
+
+      if (index < text.length) {
+        currentText += text[index];
+        let displayText = currentText.split("").map((char, i) => (i === currentText.length - 1 ? randomChar() : char)).join("");
+        typewriterText.textContent = displayText;
+        setTimeout(() => {
+          typewriterText.textContent = currentText;
+          index++;
+          typeEffect();
+        }, 50);
+      } else if (authorIndex < author.length) {
+        currentAuthor += author[authorIndex];
+        let displayAuthor = currentAuthor.split("").map((char, i) => (i === currentAuthor.length - 1 ? randomChar() : char)).join("");
+        authorText.textContent = displayAuthor;
+        setTimeout(() => {
+          authorText.textContent = currentAuthor;
+          authorIndex++;
+          typeEffect();
+        }, 50);
+      } else {
+        setTimeout(() => {
+          preloader.classList.add("fade-out");
+          setTimeout(() => {
+            preloader.style.display = "none";
+            mainContent.classList.add("fade-in");
+          }, 1000);
+        }, 1000);
+      }
+    }
+
+    function toggleMusic() {
+      if (music.paused) {
+        music.play();
+        musicToggleBtn.textContent = "Pause Music";
+      } else {
+        music.pause();
+        musicToggleBtn.textContent = "Play Music";
+      }
+    }
+
+    window.onload = typeEffect;
+  </script>
+</body>
+</html>
+<!-- Compare this snippet from SilentSyntax/sideprojects.html: -->
